@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pré-página + Chat simulado</title>
+  <style>
+    /* Reset simples */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7f7f7;color:#222}
+    a{color:inherit;text-decoration:none}
+
+    /* Container central similar à imagem */
+    .wrapper{max-width:1100px;margin:40px auto;padding:40px 20px;background:#fff;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.05);display:flex;gap:40px;align-items:center}
+
+    /* Avatar circular */
+    .avatar-wrap{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
+    .avatar{width:320px;height:320px;border-radius:50%;overflow:hidden;display:block;border:8px solid #fff;box-shadow:0 8px 30px rgba(0,0,0,0.06);cursor:pointer}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* Texto à direita */
+    .intro{flex:1}
+    .intro h1{font-size:48px;margin-bottom:8px}
+    .intro p{color:#555;margin-bottom:18px;line-height:1.45}
+
+    /* Círculos de botões */
+    .circles{display:flex;gap:18px;margin:18px 0}
+    .circle{width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06);transition:transform .18s}
+    .circle:active{transform:translateY(2px)}
+    .facebook{background:#1877F2;color:#fff}
+    .instagram{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);color:#fff}
+    .x{background:#1DA1F2;color:#fff}
+
+    /* CTA */
+    .cta{display:inline-block;margin-top:12px;padding:12px 22px;border-radius:999px;background:#ffb300;color:#111;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,0.08)}
+
+    /* Footer small */
+    .small{margin-top:28px;color:#888;font-size:13px}
+
+    /* ---- Chat page styles ---- */
+    .chat-page{display:none;max-width:430px;margin:30px auto;background:#e9eef5;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.06)}
+    .chat-header{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f6f9fc}
+    .chat-header .mini-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden}
+    .chat-header h3{font-size:16px}
+    .messages{padding:14px;min-height:360px;max-height:520px;overflow:auto;background:linear-gradient(180deg,#f7fbff, #e9f3ff)}
+    .msg{margin:10px 0;display:flex}
+    .msg.bot{justify-content:flex-start}
+    .msg.user{justify-content:flex-end}
+    .bubble{max-width:72%;padding:10px 12px;border-radius:14px;line-height:1.35}
+    .bubble.bot{background:#fff;border:1px solid rgba(0,0,0,0.03);border-bottom-left-radius:4px}
+    .bubble.user{background:#dcf8c6}
+    .timestamp{font-size:11px;color:#888;margin-top:6px}
+
+    /* Controls area */
+    .controls{padding:12px;background:#fff;display:flex;gap:8px;align-items:center}
+    .controls input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
+    .controls button{padding:8px 12px;border-radius:8px;border:none;background:#0b84ff;color:#fff;cursor:pointer}
+
+    /* small buttons row used inside chat for sim/não */
+    .inline-options{display:flex;gap:8px;margin-top:8px}
+    .opt-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.08);cursor:pointer;background:#fff}
+
+    /* offer box at end */
+    .offer{padding:14px;margin:12px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.04);text-align:center}
+    .offer a{display:inline-block;padding:10px 14px;border-radius:8px;background:#00bfff;color:#fff;font-weight:700}
+
+    /* small helpers */
+    .hidden{display:none}
+
+    @media (max-width:900px){.wrapper{flex-direction:column;align-items:center}.avatar-wrap{order:0}.intro{order:1}}
+  </style>
+</head>
+<body>
+
+  <!-- PRÉ-PÁGINA -->
+  <div class="wrapper" id="prepage">
+    <div class="avatar-wrap">
+      <a id="openChat" href="#" title="Abrir chat">
+        <figure class="avatar"><img src="assets/images/avatar.jpg" alt="Avatar"></figure>
+      </a>
+    </div>
+    <div class="intro">
+      <h1>Olá!</h1>
+      <p>Um pouco sobre mim — clique nos círculos para me seguir nas redes ou clique na foto para abrir uma conversa.</p>
+
+      <div class="circles">
+        <a class="circle facebook" id="btnFacebook" href="#" target="_blank">Facebook</a>
+        <a class="circle instagram" id="btnInstagram" href="#" target="_blank">Instagram</a>
+        <a class="circle x" id="btnX" href="#" target="_blank">X / Twitter</a>
+      </div>
+
+      <div>
+        <button class="cta" id="ctaOpen">Abrir chat</button>
+      </div>
+
+      <div class="small">Imagem e botões: substitua os links e assets nas pastas <code>assets/</code></div>
+    </div>
+  </div>
+
+  <!-- PÁGINA DE CHAT SIMULADA -->
+  <div class="chat-page" id="chatPage">
+    <div class="chat-header">
+      <div class="mini-avatar"><img src="assets/images/avatar.jpg" alt="Karina" style="width:100%;height:100%;object-fit:cover"></div>
+      <div>
+        <h3>Karina Souza</h3>
+        <div style="font-size:12px;color:#666">Online</div>
+      </div>
+    </div>
+    <div class="messages" id="messages"></div>
+
+    <div class="controls">
+      <input type="text" id="userInput" placeholder="Digite sua resposta aqui... (ex: Pedro)">
+      <button id="sendBtn">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- CONFIGURAÇÕES (use defaults) ---------- */
+    const config = {
+      socials: {
+        facebook: '#',
+        instagram: '#',
+        x: '#'
+      },
+      avatar: 'assets/images/avatar.jpg',
+      chatImagesPath: 'assets/images/chat/',
+      chatImages: ['foto01.jpg','foto02.jpg','foto03.jpg','foto04.jpg'],
+      audiosPath: 'assets/audio/',
+      audios: ['audio1.mp3','audio2.mp3','audio3.mp3','audio4.mp3'],
+      botName: 'Karina Souza',
+      offerLink: '#'
+    };
+
+    // atribui links nos botões
+    document.getElementById('btnFacebook').href = config.socials.facebook;
+    document.getElementById('btnInstagram').href = config.socials.instagram;
+    document.getElementById('btnX').href = config.socials.x;
+    document.querySelectorAll('.avatar img').forEach(img => img.src = config.avatar);
+
+    /* ---------- NARRATIVA / ROTEIRO DO CHAT ---------- */
+    // Mensagens pré-programadas. Use placeholders quando for usar nome do usuário: {name}
+    const scriptSteps = [
+      { type: 'audio', fileIndex: 0, pauseForUser: false },
+      { type: 'audio', fileIndex: 1, pauseForUser: true, expectInput: 'name', prompt:'Qual é o seu nome?' },
+      { type: 'text', text: 'Você me achou bonita?', options:['Sim','Não'] },
+      { type: 'text', text: 'Você gostaria de receber uma foto minha?', options:['Sim','Não'] },
+      // images and audios will be sent dynamically depending on choices
+      { type: 'audio', fileIndex: 2, pauseForUser: false },
+      { type: 'text', text: 'Prontinho! Obrigada por conversar. Aqui está uma oferta especial pra você.' }
+    ];
+
+    /* ---------- LÓGICA DO PLAYER DE MENSAGENS ---------- */
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    let currentStep = 0;
+    let userName = '';
+    let nextImageIndex = 0;
+    let nextAudioIndex = 0;
+
+    function scrollToBottom(){ messagesEl.scrollTop = messagesEl.scrollHeight }
+
+    function appendBotText(text,delay=0){
+      const wrapper = document.createElement('div'); wrapper.className='msg bot';
+      const bubble = document.createElement('div'); bubble.className='bubble bot'; bubble.innerHTML = text;
+      wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
+    }
+
+    function appendUserText(text){
+      const wrapper = document.createElement('div'); wrapper.className='msg user';
+      const bubble = document.createElement('div'); bubble.className='bubble user'; bubble.innerText = text;
+      wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
+    }
+
+    function appendAudioElement(src, autoplay=true){
+      const wrapper = document.createElement('div'); wrapper.className='msg bot';
+      const bubble = document.createElement('div'); bubble.className='bubble bot';
+      const audio = document.createElement('audio'); audio.controls = true; audio.src = src; if(autoplay) audio.autoplay = true;
+      bubble.appendChild(audio); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
+      return audio;
+    }
+
+    function appendImage(src){
+      const wrapper = document.createElement('div'); wrapper.className='msg bot';
+      const bubble = document.createElement('div'); bubble.className='bubble bot';
+      const img = document.createElement('img'); img.src = src; img.style.maxWidth='220px'; img.style.borderRadius='10px'; img.style.display='block';
+      bubble.appendChild(img); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
+    }
+
+    function appendOptions(options, callback){
+      const wrapper = document.createElement('div'); wrapper.className='msg bot';
+      const bubble = document.createElement('div'); bubble.className='bubble bot';
+      const row = document.createElement('div'); row.className='inline-options';
+      options.forEach(opt => {
+        const b = document.createElement('button'); b.className='opt-btn'; b.innerText = opt;
+        b.onclick = () => { callback(opt); row.querySelectorAll('button').forEach(x=>x.disabled=true) };
+        row.appendChild(b);
+      });
+      bubble.appendChild(row); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
+    }
+
+    // processa cada passo do roteiro
+    async function processStep(){
+      if(currentStep >= scriptSteps.length){ showOffer(); return; }
+      const step = scriptSteps[currentStep];
+
+      if(step.type === 'audio'){
+        // monta src baseado em fileIndex e audios disponíveis
+        const fileIdx = Math.min(step.fileIndex, config.audios.length-1);
+        const src = config.audiosPath + config.audios[fileIdx];
+        const audio = appendAudioElement(src,true);
+        nextAudioIndex = fileIdx+1;
+        // se pausa para usuário, espera o fim do audio e então espera input
+        audio.onended = () => {
+          if(step.pauseForUser && step.expectInput === 'name'){
+            appendBotText(step.prompt);
+            enableInput();
+          } else {
+            currentStep++; setTimeout(processStep,600);
+          }
+        };
+        // caso autoplay não funcione em alguns navegadores, também avança ao carregar
+        setTimeout(()=>scrollToBottom(),200);
+      }
+
+      else if(step.type === 'text'){
+        // texto simples ou com opções
+        appendBotText(step.text);
+        if(step.options){
+          appendOptions(step.options, (choice)=>{
+            appendUserText(choice);
+            // comportamento condicional
+            if(step.text.includes('receber uma foto') && choice==='Sim'){
+              // enviar sequencialmente até 4 fotos (1 por clique)
+              sendNextImage();
+            }
+            currentStep++; setTimeout(processStep,500);
+          });
+        } else {
+          currentStep++; setTimeout(processStep,700);
+        }
+      }
+    }
+
+    // Habilita input de texto para o usuário
+    function enableInput(){ inputEl.disabled = false; inputEl.focus(); sendBtn.disabled = false }
+    function disableInput(){ inputEl.disabled = true; sendBtn.disabled = true }
+
+    sendBtn.addEventListener('click', ()=>{
+      const v = inputEl.value.trim(); if(!v) return;
+      appendUserText(v); inputEl.value=''; disableInput();
+      // se o passo atual espera pelo nome, guarda e personaliza
+      const step = scriptSteps[currentStep];
+      if(step && step.expectInput === 'name'){
+        userName = v;
+        // resposta personalizada
+        appendBotText(`Olá ${userName}, eu sou a ${config.botName}! Estou muito feliz de você ter aceitado meu convite.`);
+        currentStep++; setTimeout(processStep,900);
+      } else {
+        currentStep++; setTimeout(processStep,500);
+      }
+    });
+
+    // Envia a próxima imagem da pasta (sequencial)
+    function sendNextImage(){
+      if(nextImageIndex >= config.chatImages.length) {
+        appendBotText('Enviei todas as fotos :)'); return; }
+      const src = config.chatImagesPath + config.chatImages[nextImageIndex];
+      appendImage(src); nextImageIndex++;
+    }
+
+    // Mostra a oferta final
+    function showOffer(){
+      const wrapper = document.createElement('div'); wrapper.className='msg bot';
+      const box = document.createElement('div'); box.className='offer';
+      box.innerHTML = `<div><strong>Oferta especial</strong></div><div style=\"margin-top:8px\"><a href='${config.offerLink}' target='_blank'>VER OFERTA</a></div>`;
+      wrapper.appendChild(box); messagesEl.appendChild(wrapper); scrollToBottom();
+    }
+
+    /* ---------- Inicialização e controles de UI ---------- */
+    // abrir chat quando clicar na foto ou CTA
+    document.getElementById('openChat').addEventListener('click', (e)=>{ e.preventDefault(); openChatPage(); });
+    document.getElementById('ctaOpen').addEventListener('click', openChatPage);
+
+    function openChatPage(){
+      document.getElementById('prepage').style.display='none';
+      document.getElementById('chatPage').style.display='block';
+      disableInput();
+      // inicia o roteiro com pequeno delay
+      setTimeout(()=>{ processStep(); },700);
+    }
+
+    // Preload (opcional) - carrega imagens e áudios para evitar lag
+    function preloadAssets(){
+      config.chatImages.forEach(f=>{ const i=new Image(); i.src = config.chatImagesPath + f });
+      config.audios.forEach(f=>{ const a = document.createElement('audio'); a.src = config.audiosPath + f });
+    }
+    preloadAssets();
+
+    // Caso queira iniciar diretamente para testes (descomente):
+    // openChatPage();
+
+  </script>
+</body>
+</html>
