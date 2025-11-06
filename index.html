@@ -3,303 +3,448 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pré-página + Chat simulado</title>
+  <title>Pré-página + Chat simulado (Karina Souza)</title>
   <style>
-    /* Reset simples */
+    /* ---------- Estilos (inline para arquivo único) ---------- */
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7f7f7;color:#222}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:#f3f6f9;color:#111}
     a{color:inherit;text-decoration:none}
 
-    /* Container central similar à imagem */
-    .wrapper{max-width:1100px;margin:40px auto;padding:40px 20px;background:#fff;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.05);display:flex;gap:40px;align-items:center}
-
-    /* Avatar circular */
-    .avatar-wrap{flex:0 0 320px;display:flex;align-items:center;justify-content:center}
-    .avatar{width:320px;height:320px;border-radius:50%;overflow:hidden;display:block;border:8px solid #fff;box-shadow:0 8px 30px rgba(0,0,0,0.06);cursor:pointer}
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-
-    /* Texto à direita */
+    .wrapper{max-width:1100px;margin:36px auto;padding:28px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(12,20,30,0.06);display:flex;gap:34px;align-items:center}
+    .avatar-wrap{flex:0 0 300px;display:flex;align-items:center;justify-content:center}
+    .avatar{width:300px;height:300px;border-radius:50%;overflow:hidden;border:8px solid #fff;box-shadow:0 12px 40px rgba(11,12,15,0.06)}
+    .avatar img{width:100%;height:100%;object-fit:cover}
     .intro{flex:1}
-    .intro h1{font-size:48px;margin-bottom:8px}
-    .intro p{color:#555;margin-bottom:18px;line-height:1.45}
+    .intro h1{font-size:40px;margin-bottom:6px}
+    .intro p{color:#555;margin-bottom:14px}
+    .circles{display:flex;gap:16px;margin:16px 0}
+    .circle{width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;color:#fff}
+    .facebook{background:#1877F2}
+    .instagram{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)}
+    .x{background:#1DA1F2}
+    .cta{display:inline-block;margin-top:6px;padding:12px 22px;border-radius:999px;background:#00BFFF;color:#fff;font-weight:700;cursor:pointer}
+    .small{margin-top:18px;color:#888;font-size:13px}
 
-    /* Círculos de botões */
-    .circles{display:flex;gap:18px;margin:18px 0}
-    .circle{width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06);transition:transform .18s}
-    .circle:active{transform:translateY(2px)}
-    .facebook{background:#1877F2;color:#fff}
-    .instagram{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF);color:#fff}
-    .x{background:#1DA1F2;color:#fff}
+    .chat-wrapper{display:none;max-width:420px;margin:28px auto;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);background:#eaf3ff}
+    .chat-header{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f7fbff}
+    .mini-avatar{width:46px;height:46px;border-radius:50%;overflow:hidden}
+    .mini-avatar img{width:100%;height:100%;object-fit:cover}
+    .messages{padding:14px;min-height:420px;max-height:640px;overflow:auto;background:linear-gradient(180deg,#f8fcff,#e9f6ff)}
 
-    /* CTA */
-    .cta{display:inline-block;margin-top:12px;padding:12px 22px;border-radius:999px;background:#ffb300;color:#111;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,0.08)}
-
-    /* Footer small */
-    .small{margin-top:28px;color:#888;font-size:13px}
-
-    /* ---- Chat page styles ---- */
-    .chat-page{display:none;max-width:430px;margin:30px auto;background:#e9eef5;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.06)}
-    .chat-header{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f6f9fc}
-    .chat-header .mini-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden}
-    .chat-header h3{font-size:16px}
-    .messages{padding:14px;min-height:360px;max-height:520px;overflow:auto;background:linear-gradient(180deg,#f7fbff, #e9f3ff)}
     .msg{margin:10px 0;display:flex}
     .msg.bot{justify-content:flex-start}
     .msg.user{justify-content:flex-end}
-    .bubble{max-width:72%;padding:10px 12px;border-radius:14px;line-height:1.35}
-    .bubble.bot{background:#fff;border:1px solid rgba(0,0,0,0.03);border-bottom-left-radius:4px}
+    .bubble{max-width:74%;padding:10px 12px;border-radius:14px;line-height:1.36}
+    .bubble.bot{background:#fff;border:1px solid rgba(0,0,0,0.04)}
     .bubble.user{background:#dcf8c6}
-    .timestamp{font-size:11px;color:#888;margin-top:6px}
+    .status-bubble{font-style:italic;color:#666;padding:8px 12px;border-radius:12px;background:transparent;margin-left:6px; font-size:13px}
 
-    /* Controls area */
     .controls{padding:12px;background:#fff;display:flex;gap:8px;align-items:center}
     .controls input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
     .controls button{padding:8px 12px;border-radius:8px;border:none;background:#0b84ff;color:#fff;cursor:pointer}
 
-    /* small buttons row used inside chat for sim/não */
     .inline-options{display:flex;gap:8px;margin-top:8px}
     .opt-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.08);cursor:pointer;background:#fff}
 
-    /* offer box at end */
     .offer{padding:14px;margin:12px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.04);text-align:center}
-    .offer a{display:inline-block;padding:10px 14px;border-radius:8px;background:#00bfff;color:#fff;font-weight:700}
+    .offer a{display:inline-block;padding:10px 14px;border-radius:8px;background:#00BFFF;color:#fff;font-weight:700}
 
-    /* small helpers */
-    .hidden{display:none}
+    img.chat-img{max-width:220px;border-radius:10px;display:block}
 
     @media (max-width:900px){.wrapper{flex-direction:column;align-items:center}.avatar-wrap{order:0}.intro{order:1}}
   </style>
 </head>
 <body>
 
-  <!-- PRÉ-PÁGINA -->
+  <!-- ---------- PRÉ-PÁGINA ---------- -->
   <div class="wrapper" id="prepage">
     <div class="avatar-wrap">
-      <a id="openChat" href="#" title="Abrir chat">
-        <figure class="avatar"><img src="assets/images/avatar.jpg" alt="Avatar"></figure>
-      </a>
+      <!-- AVATAR decorativo (não clicável) -->
+      <div class="avatar"><img src="assets/images/perfil.jpg" alt="Karina"></div>
     </div>
+
     <div class="intro">
-      <h1>Olá!</h1>
-      <p>Um pouco sobre mim — clique nos círculos para me seguir nas redes ou clique na foto para abrir uma conversa.</p>
+      <h1>Karina Souza</h1>
+      <p>Sou estudante de psicologia — clique nas redes ou entre no chat para conversar.</p>
 
       <div class="circles">
         <a class="circle facebook" id="btnFacebook" href="#" target="_blank">Facebook</a>
         <a class="circle instagram" id="btnInstagram" href="#" target="_blank">Instagram</a>
-        <a class="circle x" id="btnX" href="#" target="_blank">X / Twitter</a>
+        <a class="circle x" id="btnX" href="#" target="_blank">X</a>
       </div>
 
       <div>
-        <button class="cta" id="ctaOpen">Abrir chat</button>
+        <button class="cta" id="ctaOpen">Entrar no chat</button>
       </div>
 
-      <div class="small">Imagem e botões: substitua os links e assets nas pastas <code>assets/</code></div>
+      <div class="small">Substitua arquivos em <code>assets/images</code> e <code>assets/audios</code>. Link final abre em nova aba.</div>
     </div>
   </div>
 
-  <!-- PÁGINA DE CHAT SIMULADA -->
-  <div class="chat-page" id="chatPage">
+  <!-- ---------- CHAT SIMULADO ---------- -->
+  <div class="chat-wrapper" id="chatWrap">
     <div class="chat-header">
-      <div class="mini-avatar"><img src="assets/images/avatar.jpg" alt="Karina" style="width:100%;height:100%;object-fit:cover"></div>
+      <div class="mini-avatar"><img src="assets/images/perfil.jpg" alt="Karina"></div>
       <div>
         <h3>Karina Souza</h3>
         <div style="font-size:12px;color:#666">Online</div>
       </div>
     </div>
+
     <div class="messages" id="messages"></div>
 
-    <div class="controls">
-      <input type="text" id="userInput" placeholder="Digite sua resposta aqui... (ex: Pedro)">
+    <div class="controls" id="controls">
+      <input type="text" id="userInput" placeholder="Digite seu nome aqui... (ex: Pedro)">
       <button id="sendBtn">Enviar</button>
     </div>
   </div>
 
   <script>
-    /* ---------- CONFIGURAÇÕES (use defaults) ---------- */
-    const config = {
-      socials: {
-        facebook: '#',
-        instagram: '#',
-        x: '#'
-      },
-      avatar: 'assets/images/avatar.jpg',
-      chatImagesPath: 'assets/images/chat/',
-      chatImages: ['foto01.jpg','foto02.jpg','foto03.jpg','foto04.jpg'],
-      audiosPath: 'assets/audio/',
-      audios: ['audio1.mp3','audio2.mp3','audio3.mp3','audio4.mp3'],
-      botName: 'Karina Souza',
-      offerLink: '#'
+  /**************************************************************************
+   *  CONFIGURAÇÃO (edite aqui: links, nomes de arquivos e ordem das mídias)
+   *
+   *  - socials: coloque seus URLs reais
+   *  - assets.images / assets.audios: pastas relativas (padrão abaixo)
+   *  - images[] e audios[]: nomes e ordem em que o bot usará as mídias
+   *
+   *  Estrutura esperada:
+   *    assets/
+   *      images/
+   *        perfil.jpg
+   *        foto01.jpg
+   *        foto02.jpg
+   *        foto03.jpg
+   *        foto04.jpg
+   *      audios/
+   *        audio1.mp3
+   *        audio2.mp3
+   *        audio3.mp3
+   *        audio4.mp3
+   **************************************************************************/
+  const cfg = {
+    // troque pelos seus links
+    socials: {
+      facebook: 'https://facebook.com/SEU_USUARIO',
+      instagram: 'https://instagram.com/SEU_USUARIO',
+      x: 'https://x.com/SEU_USUARIO'
+    },
+
+    // caminhos das pastas (padrão)
+    assets: {
+      images: 'assets/images/',   // pasta onde estão perfil.jpg e fotos
+      audios:  'assets/audios/'   // pasta onde estão os arquivos .mp3
+    },
+
+    // ordem das imagens (você pode renomear os arquivos e mudar a ordem aqui)
+    images: [
+      'foto01.jpg', // imagem 1 enviada quando o usuário permitir
+      'foto02.jpg', // imagem 2
+      'foto03.jpg', // imagem 3
+      'foto04.jpg'  // imagem 4 (final)
+    ],
+
+    // ordem dos áudios (você pode renomear os arquivos e mudar a ordem aqui)
+    audios: [
+      'audio1.mp3', // áudio que pede o nome
+      'audio2.mp3', // áudio de resposta / história
+      'audio3.mp3',
+      'audio4.mp3'
+    ],
+
+    botName: 'Karina Souza',
+
+    // link de oferta (abre em nova aba)
+    offerLink: 'https://exemplo.com/oferta',
+
+    /* -------- parâmetros de tempo para simulação humana --------
+       ajuste se quiser respostas mais rápidas ou mais lentas */
+    timing: {
+      typingPerCharRange: [50, 120],     // ms por caractere (digitação)
+      readPerWordRange: [600, 1200],     // ms por palavra (leitura)
+      pauseBetweenActionsRange: [1500, 3000], // pausa adicional entre ações
+      recordTimeRange: [3000, 5500],     // tempo mostrando "gravando..."
+      audioBuffer: 1000                   // buffer após fim do áudio
+    }
+  };
+
+  // aplica links nos botões
+  document.getElementById('btnFacebook').href = cfg.socials.facebook;
+  document.getElementById('btnInstagram').href = cfg.socials.instagram;
+  document.getElementById('btnX').href = cfg.socials.x;
+
+  // ---------- utilitários de tempo ----------
+  const randBetween = (min, max) => Math.round(min + Math.random() * (max - min));
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  function typingTimeFor(text){
+    const chars = Math.max(1, text.length);
+    const perChar = randBetween(...cfg.timing.typingPerCharRange);
+    return Math.max(700, Math.round(chars * perChar));
+  }
+  function readingTimeFor(text){
+    const words = Math.max(1, text.trim().split(/\s+/).length);
+    const perWord = randBetween(...cfg.timing.readPerWordRange);
+    return Math.max(1200, Math.round(words * perWord));
+  }
+
+  // ---------- helpers DOM ----------
+  const messagesEl = document.getElementById('messages');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  function scrollBottom(){ messagesEl.scrollTop = messagesEl.scrollHeight; }
+
+  function createBotBubble(text, isHTML=false){
+    const wrap = document.createElement('div'); wrap.className = 'msg bot';
+    const b = document.createElement('div'); b.className = 'bubble bot';
+    if(isHTML) b.innerHTML = text; else b.innerText = text;
+    wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom(); return wrap;
+  }
+
+  function createUserBubble(text){
+    const wrap = document.createElement('div'); wrap.className = 'msg user';
+    const b = document.createElement('div'); b.className = 'bubble user'; b.innerText = text;
+    wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom(); return wrap;
+  }
+
+  function createImage(src){
+    const wrap = document.createElement('div'); wrap.className = 'msg bot';
+    const b = document.createElement('div'); b.className = 'bubble bot';
+    const img = document.createElement('img'); img.className = 'chat-img'; img.src = src;
+    b.appendChild(img); wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom(); return wrap;
+  }
+
+  function createAudioElement(src, autoplay=true){
+    const wrap = document.createElement('div'); wrap.className = 'msg bot';
+    const b = document.createElement('div'); b.className = 'bubble bot';
+    const audio = document.createElement('audio'); audio.controls = true; audio.src = src;
+    if(autoplay) audio.autoplay = true;
+    b.appendChild(audio); wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom();
+    return audio;
+  }
+
+  function createStatusBubble(text){
+    // mostra indicador tipo "Karina está digitando..." ou "gravando..."
+    const wrap = document.createElement('div'); wrap.className = 'msg bot';
+    const b = document.createElement('div'); b.className = 'status-bubble'; b.innerText = text;
+    wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom();
+    return wrap;
+  }
+
+  // options (Sim/Não)
+  function appendOptions(options, onSelect){
+    const wrap = document.createElement('div'); wrap.className = 'msg bot';
+    const b = document.createElement('div'); b.className = 'bubble bot';
+    const row = document.createElement('div'); row.className = 'inline-options';
+    options.forEach(opt=>{
+      const btn = document.createElement('button'); btn.className = 'opt-btn'; btn.innerText = opt;
+      btn.onclick = ()=>{ onSelect(opt); row.querySelectorAll('button').forEach(x=>x.disabled=true); };
+      row.appendChild(btn);
+    });
+    b.appendChild(row); wrap.appendChild(b); messagesEl.appendChild(wrap); scrollBottom();
+  }
+
+  // preload assets (melhora experiência)
+  function preload(){
+    cfg.images.forEach(f => { const i = new Image(); i.src = cfg.assets.images + f; });
+    cfg.audios.forEach(f => { const a = document.createElement('audio'); a.src = cfg.assets.audios + f; });
+  }
+  preload();
+
+  // ---------- Fluxo da conversa (humanizado) ----------
+  let userName = '';
+
+  async function startConversation(){
+    disableInput();
+
+    // 1) primeira mensagem de texto (digitando -> enviar -> pausa leitura)
+    const text1 = 'Olá, fiquei feliz que você aceitou meu convite!';
+    let s = createStatusBubble(cfg.botName + ' está digitando...');
+    await delay( typingTimeFor(text1) );
+    s.remove();
+    createBotBubble(text1);
+    await delay( readingTimeFor(text1) + randBetween(...cfg.timing.pauseBetweenActionsRange) );
+
+    // 2) gravação simulada antes do áudio
+    const rec = createStatusBubble(cfg.botName + ' está gravando...');
+    await delay( randBetween(...cfg.timing.recordTimeRange) );
+    rec.remove();
+
+    // 3) enviar audio que pede o nome
+    const audioSrc = cfg.assets.audios + cfg.audios[0];
+    const audioEl = createAudioElement(audioSrc, true);
+
+    // quando áudio terminar -> digita pergunta (fallback incluso)
+    audioEl.onended = async ()=>{
+      await delay(cfg.timing.audioBuffer);
+      const q = 'Meu nome é Karina, sou estudante de psicologia. Qual é o seu nome?';
+      const st = createStatusBubble(cfg.botName + ' está digitando...');
+      await delay( typingTimeFor(q) );
+      st.remove();
+      createBotBubble(q);
+      enableInputForName();
     };
 
-    // atribui links nos botões
-    document.getElementById('btnFacebook').href = config.socials.facebook;
-    document.getElementById('btnInstagram').href = config.socials.instagram;
-    document.getElementById('btnX').href = config.socials.x;
-    document.querySelectorAll('.avatar img').forEach(img => img.src = config.avatar);
-
-    /* ---------- NARRATIVA / ROTEIRO DO CHAT ---------- */
-    // Mensagens pré-programadas. Use placeholders quando for usar nome do usuário: {name}
-    const scriptSteps = [
-      { type: 'audio', fileIndex: 0, pauseForUser: false },
-      { type: 'audio', fileIndex: 1, pauseForUser: true, expectInput: 'name', prompt:'Qual é o seu nome?' },
-      { type: 'text', text: 'Você me achou bonita?', options:['Sim','Não'] },
-      { type: 'text', text: 'Você gostaria de receber uma foto minha?', options:['Sim','Não'] },
-      // images and audios will be sent dynamically depending on choices
-      { type: 'audio', fileIndex: 2, pauseForUser: false },
-      { type: 'text', text: 'Prontinho! Obrigada por conversar. Aqui está uma oferta especial pra você.' }
-    ];
-
-    /* ---------- LÓGICA DO PLAYER DE MENSAGENS ---------- */
-    const messagesEl = document.getElementById('messages');
-    const inputEl = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-
-    let currentStep = 0;
-    let userName = '';
-    let nextImageIndex = 0;
-    let nextAudioIndex = 0;
-
-    function scrollToBottom(){ messagesEl.scrollTop = messagesEl.scrollHeight }
-
-    function appendBotText(text,delay=0){
-      const wrapper = document.createElement('div'); wrapper.className='msg bot';
-      const bubble = document.createElement('div'); bubble.className='bubble bot'; bubble.innerHTML = text;
-      wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
-    }
-
-    function appendUserText(text){
-      const wrapper = document.createElement('div'); wrapper.className='msg user';
-      const bubble = document.createElement('div'); bubble.className='bubble user'; bubble.innerText = text;
-      wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
-    }
-
-    function appendAudioElement(src, autoplay=true){
-      const wrapper = document.createElement('div'); wrapper.className='msg bot';
-      const bubble = document.createElement('div'); bubble.className='bubble bot';
-      const audio = document.createElement('audio'); audio.controls = true; audio.src = src; if(autoplay) audio.autoplay = true;
-      bubble.appendChild(audio); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
-      return audio;
-    }
-
-    function appendImage(src){
-      const wrapper = document.createElement('div'); wrapper.className='msg bot';
-      const bubble = document.createElement('div'); bubble.className='bubble bot';
-      const img = document.createElement('img'); img.src = src; img.style.maxWidth='220px'; img.style.borderRadius='10px'; img.style.display='block';
-      bubble.appendChild(img); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
-    }
-
-    function appendOptions(options, callback){
-      const wrapper = document.createElement('div'); wrapper.className='msg bot';
-      const bubble = document.createElement('div'); bubble.className='bubble bot';
-      const row = document.createElement('div'); row.className='inline-options';
-      options.forEach(opt => {
-        const b = document.createElement('button'); b.className='opt-btn'; b.innerText = opt;
-        b.onclick = () => { callback(opt); row.querySelectorAll('button').forEach(x=>x.disabled=true) };
-        row.appendChild(b);
-      });
-      bubble.appendChild(row); wrapper.appendChild(bubble); messagesEl.appendChild(wrapper); scrollToBottom();
-    }
-
-    // processa cada passo do roteiro
-    async function processStep(){
-      if(currentStep >= scriptSteps.length){ showOffer(); return; }
-      const step = scriptSteps[currentStep];
-
-      if(step.type === 'audio'){
-        // monta src baseado em fileIndex e audios disponíveis
-        const fileIdx = Math.min(step.fileIndex, config.audios.length-1);
-        const src = config.audiosPath + config.audios[fileIdx];
-        const audio = appendAudioElement(src,true);
-        nextAudioIndex = fileIdx+1;
-        // se pausa para usuário, espera o fim do audio e então espera input
-        audio.onended = () => {
-          if(step.pauseForUser && step.expectInput === 'name'){
-            appendBotText(step.prompt);
-            enableInput();
-          } else {
-            currentStep++; setTimeout(processStep,600);
-          }
-        };
-        // caso autoplay não funcione em alguns navegadores, também avança ao carregar
-        setTimeout(()=>scrollToBottom(),200);
+    // fallback: se autoplay for bloqueado e o audio ficar pausado, mostrar pergunta após X ms
+    setTimeout(async ()=>{
+      const auds = messagesEl.querySelectorAll('audio');
+      if(!userName && auds.length && auds[0].paused){
+        await delay(400);
+        const q = 'Meu nome é Karina, sou estudante de psicologia. Qual é o seu nome?';
+        const st = createStatusBubble(cfg.botName + ' está digitando...');
+        await delay( typingTimeFor(q) );
+        st.remove();
+        createBotBubble(q);
+        enableInputForName();
       }
+    }, 5200);
+  }
 
-      else if(step.type === 'text'){
-        // texto simples ou com opções
-        appendBotText(step.text);
-        if(step.options){
-          appendOptions(step.options, (choice)=>{
-            appendUserText(choice);
-            // comportamento condicional
-            if(step.text.includes('receber uma foto') && choice==='Sim'){
-              // enviar sequencialmente até 4 fotos (1 por clique)
-              sendNextImage();
-            }
-            currentStep++; setTimeout(processStep,500);
-          });
-        } else {
-          currentStep++; setTimeout(processStep,700);
-        }
-      }
-    }
+  function enableInputForName(){ userInput.disabled = false; sendBtn.disabled = false; userInput.focus(); }
+  function disableInput(){ userInput.disabled = true; sendBtn.disabled = true; }
 
-    // Habilita input de texto para o usuário
-    function enableInput(){ inputEl.disabled = false; inputEl.focus(); sendBtn.disabled = false }
-    function disableInput(){ inputEl.disabled = true; sendBtn.disabled = true }
+  // evento do botão enviar (nome)
+  sendBtn.addEventListener('click', async ()=>{
+    const v = userInput.value.trim(); if(!v) return;
+    userInput.value = '';
+    createUserBubble(v); disableInput(); userName = v;
 
-    sendBtn.addEventListener('click', ()=>{
-      const v = inputEl.value.trim(); if(!v) return;
-      appendUserText(v); inputEl.value=''; disableInput();
-      // se o passo atual espera pelo nome, guarda e personaliza
-      const step = scriptSteps[currentStep];
-      if(step && step.expectInput === 'name'){
-        userName = v;
-        // resposta personalizada
-        appendBotText(`Olá ${userName}, eu sou a ${config.botName}! Estou muito feliz de você ter aceitado meu convite.`);
-        currentStep++; setTimeout(processStep,900);
+    // resposta personalizada
+    const reply = `Olá ${userName}, tudo bem? Como te disse, sou estudante de psicologia e estou vendendo este conteúdo para ajudar na mensalidade.`;
+    let st = createStatusBubble(cfg.botName + ' está digitando...');
+    await delay( typingTimeFor(reply) );
+    st.remove();
+    createBotBubble(reply);
+    await delay( readingTimeFor(reply) + randBetween(...cfg.timing.pauseBetweenActionsRange) );
+
+    // pergunta sobre envio de foto
+    const q2 = 'Posso te enviar uma foto minha?';
+    st = createStatusBubble(cfg.botName + ' está digitando...');
+    await delay( typingTimeFor(q2) );
+    st.remove();
+    createBotBubble(q2);
+
+    appendOptions(['Sim','Não'], async (choice)=>{
+      createUserBubble(choice);
+      await delay(randBetween(700,1300));
+
+      if(choice === 'Sim'){
+        // gravação curta -> envia foto01
+        const r = createStatusBubble(cfg.botName + ' está gravando...');
+        await delay(randBetween(1000,2400));
+        r.remove();
+        createImage(cfg.assets.images + cfg.images[0]);
+
+        await delay(randBetween(1000,1800));
+
+        // pergunta "Você me achou bonita?"
+        const q3 = 'Você me achou bonita? Seja sincero!';
+        const st3 = createStatusBubble(cfg.botName + ' está digitando...');
+        await delay( typingTimeFor(q3) );
+        st3.remove();
+        createBotBubble(q3);
+
+        appendOptions(['Sim','Não'], async (ans)=>{
+          createUserBubble(ans);
+          await delay(randBetween(900,1400));
+
+          // gravação antes de audio2 (mais longa)
+          const rec2 = createStatusBubble(cfg.botName + ' está gravando...');
+          await delay(randBetween(...cfg.timing.recordTimeRange));
+          rec2.remove();
+
+          const audio2 = createAudioElement(cfg.assets.audios + cfg.audios[1], true);
+          audio2.onended = async ()=>{
+            await delay(cfg.timing.audioBuffer + randBetween(400,900));
+            // foto02
+            createImage(cfg.assets.images + cfg.images[1]);
+            await delay(randBetween(1000,1800));
+            // duas mensagens envolventes
+            const m1 = 'Gosto de conversar com pessoas sinceras.';
+            const m2 = 'Às vezes, é bom fugir um pouco da rotina, não acha?';
+            let st4 = createStatusBubble(cfg.botName + ' está digitando...');
+            await delay( typingTimeFor(m1) );
+            st4.remove();
+            createBotBubble(m1);
+            await delay( readingTimeFor(m1) + randBetween(400,900) );
+            let st5 = createStatusBubble(cfg.botName + ' está digitando...');
+            await delay( typingTimeFor(m2) );
+            st5.remove();
+            createBotBubble(m2);
+            await delay( readingTimeFor(m2) + randBetween(500,1100) );
+            // foto03
+            createImage(cfg.assets.images + cfg.images[2]);
+            await delay(randBetween(1000,1800));
+            // mensagem final + foto04 + oferta
+            const finalMsg = 'Tenho um conteúdo especial que preparei com muito carinho.';
+            let st6 = createStatusBubble(cfg.botName + ' está digitando...');
+            await delay( typingTimeFor(finalMsg) );
+            st6.remove();
+            createBotBubble(finalMsg);
+            await delay(randBetween(800,1400));
+            createImage(cfg.assets.images + cfg.images[3]);
+            await delay(randBetween(1000,1600));
+            const offerWrap = document.createElement('div'); offerWrap.className='msg bot';
+            const box = document.createElement('div'); box.className='offer';
+            box.innerHTML = `<div><strong>Oferta especial</strong></div><div style="margin-top:8px"><a href="${cfg.offerLink}" target="_blank">VER OFERTA</a></div>`;
+            offerWrap.appendChild(box); messagesEl.appendChild(offerWrap); scrollBottom();
+          };
+        });
+
       } else {
-        currentStep++; setTimeout(processStep,500);
+        // usuário disse não às fotos -> fluxo alternativo humanizado
+        const alt = 'Tudo bem. Não vou insistir :) Posso te enviar mais informações em seguida.';
+        const stAlt = createStatusBubble(cfg.botName + ' está digitando...');
+        await delay( typingTimeFor(alt) );
+        stAlt.remove();
+        createBotBubble(alt);
+        await delay(randBetween(1000,1800));
+
+        // gravação e audio seguido por imagens e oferta
+        const rec3 = createStatusBubble(cfg.botName + ' está gravando...');
+        await delay(randBetween(...cfg.timing.recordTimeRange));
+        rec3.remove();
+        const audio2b = createAudioElement(cfg.assets.audios + cfg.audios[1], true);
+        audio2b.onended = async ()=>{
+          await delay(cfg.timing.audioBuffer + randBetween(400,900));
+          createImage(cfg.assets.images + cfg.images[1]);
+          await delay(randBetween(900,1400));
+          const mA = 'Tenho um conteúdo especial que preparei com muito carinho.';
+          const stA = createStatusBubble(cfg.botName + ' está digitando...');
+          await delay( typingTimeFor(mA) );
+          stA.remove();
+          createBotBubble(mA);
+          await delay(900);
+          createImage(cfg.assets.images + cfg.images[2]);
+          await delay(900);
+          createImage(cfg.assets.images + cfg.images[3]);
+          await delay(1100);
+          const offerWrap = document.createElement('div'); offerWrap.className='msg bot';
+          const box = document.createElement('div'); box.className='offer';
+          box.innerHTML = `<div><strong>Oferta especial</strong></div><div style="margin-top:8px"><a href="${cfg.offerLink}" target="_blank">VER OFERTA</a></div>`;
+          offerWrap.appendChild(box); messagesEl.appendChild(offerWrap); scrollBottom();
+        };
       }
     });
+  });
 
-    // Envia a próxima imagem da pasta (sequencial)
-    function sendNextImage(){
-      if(nextImageIndex >= config.chatImages.length) {
-        appendBotText('Enviei todas as fotos :)'); return; }
-      const src = config.chatImagesPath + config.chatImages[nextImageIndex];
-      appendImage(src); nextImageIndex++;
-    }
+  // envio com Enter
+  userInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') sendBtn.click(); });
 
-    // Mostra a oferta final
-    function showOffer(){
-      const wrapper = document.createElement('div'); wrapper.className='msg bot';
-      const box = document.createElement('div'); box.className='offer';
-      box.innerHTML = `<div><strong>Oferta especial</strong></div><div style=\"margin-top:8px\"><a href='${config.offerLink}' target='_blank'>VER OFERTA</a></div>`;
-      wrapper.appendChild(box); messagesEl.appendChild(wrapper); scrollToBottom();
-    }
+  // cria bolha de usuário
+  function createUserBubble(text){ const w = document.createElement('div'); w.className='msg user'; const b=document.createElement('div'); b.className='bubble user'; b.innerText=text; w.appendChild(b); messagesEl.appendChild(w); scrollBottom(); }
 
-    /* ---------- Inicialização e controles de UI ---------- */
-    // abrir chat quando clicar na foto ou CTA
-    document.getElementById('openChat').addEventListener('click', (e)=>{ e.preventDefault(); openChatPage(); });
-    document.getElementById('ctaOpen').addEventListener('click', openChatPage);
+  // abre chat
+  document.getElementById('ctaOpen').addEventListener('click', (e)=>{ e.preventDefault(); openChat(); });
+  function openChat(){
+    document.getElementById('prepage').style.display='none';
+    document.getElementById('chatWrap').style.display='block';
+    disableInput();
+    startConversation();
+  }
 
-    function openChatPage(){
-      document.getElementById('prepage').style.display='none';
-      document.getElementById('chatPage').style.display='block';
-      disableInput();
-      // inicia o roteiro com pequeno delay
-      setTimeout(()=>{ processStep(); },700);
-    }
-
-    // Preload (opcional) - carrega imagens e áudios para evitar lag
-    function preloadAssets(){
-      config.chatImages.forEach(f=>{ const i=new Image(); i.src = config.chatImagesPath + f });
-      config.audios.forEach(f=>{ const a = document.createElement('audio'); a.src = config.audiosPath + f });
-    }
-    preloadAssets();
-
-    // Caso queira iniciar diretamente para testes (descomente):
-    // openChatPage();
+  // por padrão input desabilitado até o bot pedir o nome
+  disableInput();
 
   </script>
 </body>
